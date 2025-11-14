@@ -5,10 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { summary, articleId } = await req.json();
-  console.log("==========================");
-  console.log("Quiziin backendiin summary", summary);
-  console.log("==========================");
+  const { summary, id } = await req.json();
+
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: summary,
@@ -19,15 +17,13 @@ export async function POST(req: NextRequest) {
   Return a JSON array of 5 objects with keys:
   "question", "options" (array of 4 strings), "correctAnswer".
   Summary: ${summary}
+  
 `,
     },
   });
 
   const quizJson =
     response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-
-  console.log("=========", quizJson);
-  console.log("Raw AI response:", response.text);
 
   if (!quizJson) {
     return NextResponse.json({ quiz: [] });
@@ -59,8 +55,10 @@ export async function POST(req: NextRequest) {
   //         question: q.question,
   //         options: q.options,
   //         answer: q.correctAnswer,
-  //         articleId: articleId
+  //         articleid: id,
+  //       },
   //     });
+  //     console.log("id", id);
   //     console.log("quizzes saved");
   //   }
   // } catch (error) {

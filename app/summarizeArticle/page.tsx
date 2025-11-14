@@ -41,9 +41,8 @@ export default function Page() {
   const history = async () => {
     router.push(
       `/history?title=${encodeURIComponent(title)}
-      &summary=${encodeURIComponent(summary)}&articlePromt=${encodeURIComponent(
-        articlePromt
-      )}`
+     &summary=${encodeURIComponent(summary)}
+      &articlePromt=${encodeURIComponent(articlePromt)}`
     );
   };
 

@@ -20,6 +20,8 @@
 //   open: boolean;
 // };
 
+//
+
 // const HomeSideBar = ({ open }: Props) => {
 //   const router = useRouter();
 //   const searchParams = useSearchParams();

@@ -4,7 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArticleType } from "@/types";
 
 export default function Page() {
   const [title, setTitle] = useState<string>("");
@@ -25,25 +24,40 @@ export default function Page() {
         body: JSON.stringify({ articlePromt, title, summary }),
       });
       const data = await response.json();
+
       if (data.message) {
-        const newArticle: ArticleType = { id: Date.now(), title };
-
-        const existing = JSON.parse(localStorage.getItem("articles") || "[]");
-
         localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
 
-        localStorage.setItem(
-          "articles",
-          JSON.stringify([...existing, newArticle])
-        );
         router.push(
           `/summarizeArticle?title=${encodeURIComponent(
-            newArticle.title
+            title
           )}&summary=${encodeURIComponent(
             data.message
           )}&articlePromt=${encodeURIComponent(articlePromt)}`
         );
       }
+
+      // articleId => state uusgej zadlaad useRouter eeree damjuulahuu g bodjiin
+
+      // if (data.message) {
+      //   const newArticle: ArticleType = { id: Date.now(), title };
+
+      //   const existing = JSON.parse(localStorage.getItem("articles") || "[]");
+
+      //   localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
+
+      //   localStorage.setItem(
+      //     "articles",
+      //     JSON.stringify([...existing, newArticle])
+      //   );
+      //   router.push(
+      //     `/summarizeArticle?title=${encodeURIComponent(
+      //       newArticle.title
+      //     )}&summary=${encodeURIComponent(
+      //       data.message
+      //     )}&articlePromt=${encodeURIComponent(articlePromt)}`
+      //   );
+      // }
       setSummary(data.message);
     } catch (error) {
       console.log("Error:", error);

@@ -21,6 +21,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const summary = searchParams.get("summary") || "";
   const id = searchParams.get("id");
+  console.log("quizzesruu searchParamsaar irsen id", id);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -32,10 +33,6 @@ export default function Page() {
     { question: string; options: string[]; correctAnswer: string }[]
   >([]);
 
-  console.log("===== quizzes =======");
-  console.log(quizzes);
-  console.log("===== quizzes =======");
-
   const [answer, setAnswer] = useState<
     { question: string; userAnswer: string; correctAnswer: string }[]
   >([]);
@@ -43,16 +40,14 @@ export default function Page() {
   const currentQuiz = quizzes[currentIndex];
 
   useEffect(() => {
-    if (!summary) return;
     const fetchQuiz = async () => {
       const response = await fetch("/api/quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ summary, articleId: id }),
+        body: JSON.stringify({ summary, id }),
       });
 
       const data = await response.json();
-      console.log("QUIZ API RESPONSE:", data);
 
       if (Array.isArray(data.quiz)) {
         setQuizzes(data.quiz);
