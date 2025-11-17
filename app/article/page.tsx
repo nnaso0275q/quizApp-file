@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArticleType } from "@/types";
 
 export default function Page() {
   const [title, setTitle] = useState<string>("");
@@ -25,6 +26,8 @@ export default function Page() {
       });
       const data = await response.json();
 
+      // console.log(" data.articleId", data.articleId);
+
       if (data.message) {
         localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
 
@@ -37,27 +40,28 @@ export default function Page() {
         );
       }
 
-      // articleId => state uusgej zadlaad useRouter eeree damjuulahuu g bodjiin
+      if (data.message) {
+        // localStorage.setItem("articleId", data.articleId);
 
-      // if (data.message) {
-      //   const newArticle: ArticleType = { id: Date.now(), title };
+        // const newArticle: ArticleType = { id: Date.now(), title };
 
-      //   const existing = JSON.parse(localStorage.getItem("articles") || "[]");
+        const existing = JSON.parse(localStorage.getItem("articles") || "[]");
 
-      //   localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
+        localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
 
-      //   localStorage.setItem(
-      //     "articles",
-      //     JSON.stringify([...existing, newArticle])
-      //   );
-      //   router.push(
-      //     `/summarizeArticle?title=${encodeURIComponent(
-      //       newArticle.title
-      //     )}&summary=${encodeURIComponent(
-      //       data.message
-      //     )}&articlePromt=${encodeURIComponent(articlePromt)}`
-      //   );
-      // }
+        // localStorage.setItem(
+        //   "articles",
+        //   JSON.stringify([...existing, newArticle])
+        // );
+        router.push(
+          `/summarizeArticle?title=${encodeURIComponent(
+            title
+          )}&summary=${encodeURIComponent(
+            data.message
+          )}&articlePromt=${encodeURIComponent(articlePromt)}`
+        );
+      }
+
       setSummary(data.message);
     } catch (error) {
       console.log("Error:", error);

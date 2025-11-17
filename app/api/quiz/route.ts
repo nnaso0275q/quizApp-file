@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { summary, id } = await req.json();
+  const { summary } = await req.json();
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
@@ -16,9 +16,7 @@ export async function POST(req: NextRequest) {
   Do not include markdown, explanations, or code fences.
   Return a JSON array of 5 objects with keys:
   "question", "options" (array of 4 strings), "correctAnswer".
-  Summary: ${summary}
-  
-`,
+  Summary: ${summary}`,
     },
   });
 

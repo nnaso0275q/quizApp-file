@@ -27,6 +27,8 @@ export default function Page() {
       });
       const data = await response.json();
 
+      // localStorage.setItem("articleId", data.articleId);
+
       router.push(
         `/quizzes?title=${encodeURIComponent(
           title

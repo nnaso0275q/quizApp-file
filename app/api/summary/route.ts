@@ -4,6 +4,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// export async function GET(
+//   req: Request,
+//   { params }: { params: { id: string } }
+// ) {
+//   const articles = await prisma.articles.findUnique({
+//     where: { id: Number(params.id) },
+//   });
+//   console.log("----article----", articles);
+//   if (!articles) {
+//     return NextResponse.json({ error: "Article not found" }, { status: 404 });
+//   }
+
+//   return NextResponse.json(articles);
+// }
+
 export async function POST(req: NextRequest) {
   const { articlePromt, summary, title } = await req.json();
 
@@ -18,14 +33,15 @@ export async function POST(req: NextRequest) {
 
   const text = response.text;
   try {
-    const articles = await prisma.articles.create({
+    const article = await prisma.articles.create({
       data: {
         title: title,
         content: articlePromt,
         summery: text,
       },
     });
-    return NextResponse.json({ message: response.text, articles });
+    console.log("=== articleId: article.id ===", article.id);
+    return NextResponse.json({ message: response.text, articleId: article.id });
   } catch (error) {
     // console.log(response.data);
     // return NextResponse.json({ message: "failed" });
