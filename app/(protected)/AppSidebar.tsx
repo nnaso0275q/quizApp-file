@@ -68,8 +68,8 @@ export function AppSidebar() {
                   onClick={() => handleSelectedItem(item.id)}
                   className={`cursor-pointer ${
                     selectedItems?.id === item.id
-                      ? "bg-gray-100 font-semibold"
-                      : ""
+                      ? "bg-gray-200 font-semibold"
+                      : "hover:bg-gray-200 transition-all duration-300"
                   }`}
                 >
                   <div className="cursor-default text-black font-medium h-fit py-2 text-base">

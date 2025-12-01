@@ -13,6 +13,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
   const createSummary = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,33 +27,27 @@ export default function Page() {
       });
       const data = await response.json();
 
-      // console.log(" data.articleId", data.articleId);
+      console.log("data from /api/summary:", data);
 
-      if (data.message) {
-        localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
-
-        router.push(
-          `/summarizeArticle?title=${encodeURIComponent(
-            title
-          )}&summary=${encodeURIComponent(
-            data.message
-          )}&articlePromt=${encodeURIComponent(articlePromt)}`
-        );
+      if (!data || !data.message) {
+        throw new Error("No message in response");
       }
 
+      localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
+      localStorage.setItem("quizSummary", data.message);
+      localStorage.setItem("quizTitle", title);
+
       if (data.message) {
-        // localStorage.setItem("articleId", data.articleId);
-
-        // const newArticle: ArticleType = { id: Date.now(), title };
-
-        const existing = JSON.parse(localStorage.getItem("articles") || "[]");
-
         localStorage.setItem("articlePromt", JSON.stringify(articlePromt));
+        localStorage.setItem("articleId", String(data.articleId));
 
-        // localStorage.setItem(
-        //   "articles",
-        //   JSON.stringify([...existing, newArticle])
-        // );
+        const newArticle: ArticleType = { id: data.articleId, title };
+        const existing = JSON.parse(localStorage.getItem("articles") || "[]");
+        localStorage.setItem(
+          "articles",
+          JSON.stringify([...existing, newArticle])
+        );
+
         router.push(
           `/summarizeArticle?title=${encodeURIComponent(
             title
@@ -64,10 +59,13 @@ export default function Page() {
 
       setSummary(data.message);
     } catch (error) {
-      console.log("Error:", error);
-      alert("failed");
+      console.error("Error in createSummary:", error);
+      alert("Request failed — check console and server logs.");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div>
       <div className="w-[628px] h-[442px] bg-white border rounded-xl mt-6 mx-auto ml-50">
@@ -83,6 +81,7 @@ export default function Page() {
               question. Your articles will saved in the sidebar for future
               reference.
             </div>
+
             <div>
               <div className="flex items-center gap-1">
                 <img className="w-[11px] h-[13px]" src="/file.svg"></img>
@@ -98,6 +97,7 @@ export default function Page() {
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>
+
             <div>
               <div className="flex items-center gap-1">
                 <img className="w-[11px] h-[13px]" src="/file.svg"></img>
@@ -111,7 +111,7 @@ export default function Page() {
                 placeholder="Enter a title for your article..."
                 value={articlePromt}
                 onChange={(e) => setArticlePromt(e.target.value)}
-              ></Textarea>
+              />
             </div>
 
             <Button
