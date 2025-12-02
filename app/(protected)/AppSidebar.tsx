@@ -20,6 +20,8 @@ export function AppSidebar() {
   const [items, setItems] = useState<ItemsType[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
+console.log("items", items)
+
   useEffect(() => {
     const saved = localStorage.getItem("articles");
     if (saved) setItems(JSON.parse(saved));
