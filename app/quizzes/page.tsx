@@ -39,16 +39,19 @@ export default function Page() {
 
   const currentQuiz = quizzes[currentIndex];
 
+
+
+
   useEffect(() => {
     const fetchQuiz = async () => {
       const response = await fetch("/api/quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ summary, id }),
+        body: JSON.stringify({ summary, articleid: id }),
       });
 
       const data = await response.json();
-
+      console.log({ data });
       if (Array.isArray(data.quiz)) {
         setQuizzes(data.quiz);
       } else {
@@ -79,6 +82,41 @@ export default function Page() {
     setShowNext(false);
     setCurrentIndex((prev) => prev + 1);
   };
+
+
+
+const saveQuizzesToNeon = async () => {
+  try {
+    const response = await fetch("/api/saveQuizzes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId: id, quizzes }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("Backend returned non-OK:", text);
+      alert("Failed to save quizzes.");
+      return;
+    }
+
+    console.log("Sending articleId to backend:", id);
+    const data = await response.json();
+    if (data.success) {
+      alert("Quizzes saved successfully!");
+      router.back();
+    } else {
+      console.error(data.error);
+      alert("Failed to save quizzes.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Failed to save quizzes.");
+  }
+};
+
+
+
 
   return (
     <>
@@ -198,8 +236,7 @@ export default function Page() {
                   <img src="/reload.svg"></img>
                   Restart quiz
                 </Button>
-
-                <Button className="flex items-center">
+                <Button className="flex items-center" onClick={saveQuizzesToNeon}>
                   <img src="/bookmark.svg"></img>
                   Save and leave
                 </Button>

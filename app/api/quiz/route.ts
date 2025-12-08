@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { summary } = await req.json();
+  const { summary, articleId } = await req.json();
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
@@ -23,20 +23,14 @@ export async function POST(req: NextRequest) {
   const quizJson =
     response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
 
-  if (!quizJson) {
-    return NextResponse.json({ quiz: [] });
-  }
+  if (!quizJson) return NextResponse.json({ quiz: [] });
 
   const cleaned = quizJson
     .replace(/```json|```/gi, "")
     .replace(/\n/g, " ")
     .trim();
 
-  let quizArray: {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-  }[] = [];
+  let quizArray: { question: string; options: string[]; correctAnswer: string }[] = [];
 
   try {
     quizArray = JSON.parse(cleaned);
@@ -46,22 +40,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ quiz: [] });
   }
 
-  // try {
-  //   for (const q of quizArray) {
-  //     await prisma.quizzes.create({
-  //       data: {
-  //         question: q.question,
-  //         options: q.options,
-  //         answer: q.correctAnswer,
-  //         articleid: id,
-  //       },
-  //     });
-  //     console.log("id", id);
-  //     console.log("quizzes saved");
-  //   }
-  // } catch (error) {
-  //   console.log("Error");
-  // }
+try {
+  for (const q of quizArray) {
+    await prisma.quizzes.create({
+      data: {
+        question: q.question,
+        options: q.options, 
+        answer: q.correctAnswer,
+        articleid: Number(articleId),
+      },
+    });
+  }
+  console.log("Quizzes saved successfully");
+} catch (error) {
+  console.error("Error saving quizzes to DB:", error);
+}
+
 
   return NextResponse.json({ quiz: quizArray });
 }
