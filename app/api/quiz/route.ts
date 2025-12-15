@@ -1,61 +1,48 @@
 import { prisma } from "@/lib/prisma";
-import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   const { summary, articleId } = await req.json();
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: summary,
-    config: {
-      systemInstruction: `
-  You are a JSON generator. Output only valid JSON.
-  Do not include markdown, explanations, or code fences.
-  Return a JSON array of 5 objects with keys:
-  "question", "options" (array of 4 strings), "correctAnswer".
-  Summary: ${summary}`,
-    },
-  });
+  if (!summary || !articleId) {
+    return NextResponse.json({ quiz: [], error: "Missing summary or articleId" });
+  }
 
-  const quizJson =
-    response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-
-  if (!quizJson) return NextResponse.json({ quiz: [] });
-
-  const cleaned = quizJson
-    .replace(/```json|```/gi, "")
-    .replace(/\n/g, " ")
-    .trim();
-
-  let quizArray: { question: string; options: string[]; correctAnswer: string }[] = [];
+  let quizArray = [];
 
   try {
-    quizArray = JSON.parse(cleaned);
-  } catch (error) {
-    console.error("Failed to parse quiz JSON:", error);
-    console.log("Cleaned AI response:", quizJson);
-    return NextResponse.json({ quiz: [] });
-  }
-
-try {
-  for (const q of quizArray) {
-    await prisma.quizzes.create({
-      data: {
-        question: q.question,
-        options: q.options, 
-        answer: q.correctAnswer,
-        articleid: Number(articleId),
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: summary,
+      config: {
+        systemInstruction: `
+          Output JSON array of 5 objects: 
+          { question, options (array of 4), correctAnswer }
+        `,
       },
     });
-  }
-  console.log("Quizzes saved successfully");
-} catch (error) {
-  console.error("Error saving quizzes to DB:", error);
-}
 
+    const quizJson = response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    const cleaned = quizJson.replace(/```json|```/gi, "").replace(/\n/g, " ").trim();
+
+    quizArray = JSON.parse(cleaned);
+
+    for (const q of quizArray) {
+      await prisma.quizzes.create({
+        data: {
+          question: q.question,
+          options: q.options,
+          answer: q.correctAnswer,
+          articles: { connect: { id: Number(articleId) } }, // ✅ required relation
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Quiz generate/save error:", error);
+  }
 
   return NextResponse.json({ quiz: quizArray });
 }

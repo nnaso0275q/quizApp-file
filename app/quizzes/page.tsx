@@ -83,37 +83,51 @@ export default function Page() {
     setCurrentIndex((prev) => prev + 1);
   };
 
-
-
 const saveQuizzesToNeon = async () => {
-  try {
-    const response = await fetch("/api/saveQuizzes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ articleId: id, quizzes }),
-    });
+  if (!id || !quizzes || quizzes.length === 0) return;
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Backend returned non-OK:", text);
-      alert("Failed to save quizzes.");
-      return;
-    }
+  const response = await fetch("/api/saveQuizzes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ articleId: Number(id), quizzes }),
+  });
 
-    console.log("Sending articleId to backend:", id);
-    const data = await response.json();
-    if (data.success) {
-      alert("Quizzes saved successfully!");
-      router.back();
-    } else {
-      console.error(data.error);
-      alert("Failed to save quizzes.");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Failed to save quizzes.");
-  }
+  const data = await response.json();
+  if (data.success) router.back();
 };
+
+
+
+
+// const saveQuizzesToNeon = async () => {
+//   try {
+//     const response = await fetch("/api/saveQuizzes", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ articleId: id, quizzes }),
+//     });
+
+//     if (!response.ok) {
+//       const text = await response.text();
+//       console.error("Backend returned non-OK:", text);
+//       alert("Failed to save quizzes.");
+//       return;
+//     }
+
+//     console.log("Sending articleId to backend:", id);
+//     const data = await response.json();
+//     if (data.success) {
+//       alert("Quizzes saved successfully!");
+//       router.back();
+//     } else {
+//       console.error(data.error);
+//       alert("Failed to save quizzes.");
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     alert("Failed to save quizzes.");
+//   }
+// };
 
 
 

@@ -27,7 +27,7 @@ export default function Page() {
       });
       const data = await response.json();
 
-      console.log("data from /api/summary:", data);
+      console.log("data from /api/summary: data===", data);
 
       if (!data || !data.message) {
         throw new Error("No message in response");
