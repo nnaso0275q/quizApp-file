@@ -8,7 +8,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     <div>
       <Header />
       <SidebarProvider>
-        <AppSidebar open />
+        <AppSidebar/>
         <main className="mt-[75px]">
           <SidebarTrigger />
           <div className="bg-background">{children}</div>
