@@ -1,19 +1,24 @@
+// 
+
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function History() {
-  const searchParams = useSearchParams();
+interface HistoryProps {
+  searchParams: {
+    title?: string;
+    summary?: string;
+    articlePromt?: string;
+  };
+}
+
+const History = ({ searchParams }: HistoryProps) => {
   const router = useRouter();
-
-  const title = searchParams.get("title") || "";
-  const summary = searchParams.get("summary") || "";
-  const articlePromt = searchParams.get("articlePromt") || "";
-
-  const [promt, setPromt] = useState<string>("");
+  const { title = "", summary = "", articlePromt = "" } = searchParams;
+  const [promt, setPromt] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("articlePromt");
@@ -41,14 +46,10 @@ export default function History() {
         <div className="font-semibold text-2xl mt-2">{title}</div>
         <div className="font-normal text-sm mt-2">{summary}</div>
         <div className="flex items-center gap-1 mt-5">
-          <img className="w-[11px] h-[13px]" src="/file.svg"></img>
-          <div className="font-semibold text-sm text-muted-foreground">
-            Article Content
-          </div>
+          <img className="w-[11px] h-[13px]" src="/file.svg" />
+          <div className="font-semibold text-sm text-muted-foreground">Article Content</div>
         </div>
-        <div className="font-normal text-sm mt-2 whitespace-pre-line">
-          {articlePromt}
-        </div>
+        <div className="font-normal text-sm mt-2 whitespace-pre-line">{articlePromt}</div>
 
         <Button className="h-10 mt-5" type="submit">
           Take a quiz
@@ -56,4 +57,6 @@ export default function History() {
       </div>
     </>
   );
-}
+};
+
+export default History;
