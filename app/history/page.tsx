@@ -3,27 +3,22 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface HistoryProps {
-  searchParams: {
-    title?: string;
-    summary?: string;
-    articlePromt?: string;
-  };
-}
-
-const History = ({ searchParams }: HistoryProps) => {
+export default function History() {
   const router = useRouter();
-  const { title = "", summary = "", articlePromt = "" } = searchParams;
+  const searchParams = useSearchParams();
 
-  // LocalStorage-аас авах хувилбар (Props-ыг overwrite хийдэг)
-  const [promt, setPromt] = useState(articlePromt);
+  const title = searchParams.get("title") || "";
+  const summary = searchParams.get("summary") || "";
+  const articlePromtParam = searchParams.get("articlePromt") || "";
+
+  const [articlePromt, setArticlePromt] = useState(articlePromtParam);
 
   useEffect(() => {
     const saved = localStorage.getItem("articlePromt");
-    if (saved) setPromt(JSON.parse(saved));
+    if (saved) setArticlePromt(JSON.parse(saved));
   }, []);
 
   return (
@@ -52,7 +47,7 @@ const History = ({ searchParams }: HistoryProps) => {
           <div className="font-semibold text-sm text-muted-foreground">Article Content</div>
         </div>
 
-        <div className="font-normal text-sm mt-2 whitespace-pre-line">{promt}</div>
+        <div className="font-normal text-sm mt-2 whitespace-pre-line">{articlePromt}</div>
 
         <Button className="h-10 mt-5" type="submit">
           Take a quiz
@@ -60,6 +55,4 @@ const History = ({ searchParams }: HistoryProps) => {
       </div>
     </>
   );
-};
-
-export default History;
+}
