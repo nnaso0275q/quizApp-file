@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
           question: q.question,
           options: q.options,
           answer: q.correctAnswer,
-          articles: { connect: { id: Number(articleId) } }, 
+          articles: { connect: { id: Number(articleId) } },  
         },
       });
     }
