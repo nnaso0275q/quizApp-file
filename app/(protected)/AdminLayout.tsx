@@ -1,14 +1,15 @@
 "use client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/app/(protected)/AppSidebar";
+
 import Header from "./Header";
+import AppSidebar from "./AppSidebar";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Header />
       <SidebarProvider>
-        <AppSidebar/>
+        <AppSidebar />
         <main className="mt-[75px]">
           <SidebarTrigger />
           <div className="bg-background">{children}</div>

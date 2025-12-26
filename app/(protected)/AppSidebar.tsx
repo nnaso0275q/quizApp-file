@@ -9,14 +9,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ItemsType } from "@/types";
 
-export function AppSidebar() {
+function AppSidebar() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+
+  // const params = use(searchParams);
+  // const id = params.id
 
   const [items, setItems] = useState<ItemsType[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -53,7 +54,7 @@ console.log("items", items)
     router.push(`article?id=${id}`);
   };
 
-  const selectedItems = items.find((item) => item.id === Number(id));
+  const selectedItems = items.find((item) => item.id === Number(1));
 
   return (
     <Sidebar>
@@ -89,3 +90,4 @@ console.log("items", items)
     </Sidebar>
   );
 }
+export default AppSidebar

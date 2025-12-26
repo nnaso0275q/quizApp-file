@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model articles {
@@ -62,6 +61,7 @@ model userscores {
   userid    Int
   score     Int?
   createdat DateTime? @default(now()) @db.Timestamptz(6)
+  updatedat DateTime? @default(now()) @db.Timestamptz(6)
   quizzes   quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

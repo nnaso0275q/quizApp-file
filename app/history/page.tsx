@@ -3,16 +3,26 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
 
-export default function History() {
+function History({searchParams}:{
+    searchParams:Promise<{
+        title:string,
+        summary:string,
+        articlePromt:string,
+        
+    }>
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+ 
+  const params = use(searchParams);
+  
 
-  const title = searchParams.get("title") || "";
-  const summary = searchParams.get("summary") || "";
-  const articlePromtParam = searchParams.get("articlePromt") || "";
+  const title = params.title
+  const summary = params.summary
+  const articlePromtParam = params.articlePromt
+
 
   const [articlePromt, setArticlePromt] = useState(articlePromtParam);
 
@@ -56,3 +66,4 @@ export default function History() {
     </>
   );
 }
+export default History
